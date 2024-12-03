@@ -1,5 +1,6 @@
 from functools import reduce
 import re
+import timeit
 
 def parse_input(filename):
     return open(filename, 'r').read()
@@ -29,5 +30,7 @@ def solve_part_two():
     print(sum)
     pass
 
-solve_part_one()
-solve_part_two()
+result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)
+print("Part I ran in %s seconds" % str(result))
+result = timeit.timeit('solve_part_two()', setup='from __main__ import solve_part_two', number=1)
+print("Part II ran in %s seconds" % str(result))
