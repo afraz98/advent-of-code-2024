@@ -1,0 +1,56 @@
+# Need to traverse word search forward, backwards, up, down, and diagonally to determine 
+# where 'XMAS' is.
+
+def parse_input(filename):
+    return [line.strip('\n') for line in open(filename, 'r')]
+
+def test_coordinates(a,b,c,d, word_search):
+    count = 0
+    if(word_search[a[0]][a[1]] + word_search[b[0]][b[1]] + word_search[c[0]][c[1]] + word_search[d[0]][d[1]] == 'XMAS' and all([x >= 0 for x in [a[0], a[1], b[0], b[1], c[0], c[1], d[0], d[1]]])):
+        print(a[0], a[1], b[0], b[1], c[0], c[1], d[0], d[1])
+        count += 1
+    if(word_search[a[0]][a[1]] + word_search[b[0]][b[1]] + word_search[c[0]][c[1]] + word_search[d[0]][d[1]] == 'SAMX' and all([x >= 0 for x in [a[0], a[1], b[0], b[1], c[0], c[1], d[0], d[1]]])):
+        print(a[0], a[1], b[0], b[1], c[0], c[1], d[0], d[1])
+        count += 1
+    return count
+
+def solve_part_one():
+    word_search = [list(x) for x in parse_input("day04.txt")] # Column-major
+    count = 0
+
+    # Traverse list horizontally
+    for col in range(0, len(word_search[0])):
+        for row in range(0, len(word_search)):
+            try:
+                count += test_coordinates((col, row), (col + 1, row), (col + 2, row), (col+3, row), word_search)
+            except:
+                pass
+
+    # Traverse list vertically
+    for col in range(0, len(word_search[0])):
+        for row in range(0, len(word_search)):
+                try:
+                    count += test_coordinates((col, row), (col, row + 1), (col, row + 2), (col, row + 3), word_search)  
+                except:
+                    pass
+
+    # Traverse list diagonally (left-to-right)
+    for col in range(0, len(word_search[0])):
+        for row in range(0, len(word_search)):
+                try:
+                    count += test_coordinates((col, row), (col + 1, row + 1), (col + 2, row + 2), (col + 3, row + 3), word_search)  
+                except:
+                    pass
+
+    # Traverse list diagonally (right-to-left)
+    for col in range(0, len(word_search[0])):
+        for row in range(0, len(word_search)):
+            try:
+                count += test_coordinates((col, row), (col + 1, row - 1), (col + 2, row - 2), (col + 3, row - 3), word_search)  
+            except:
+                pass
+
+    print(count)
+    pass
+
+solve_part_one()
