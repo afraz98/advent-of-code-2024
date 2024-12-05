@@ -1,6 +1,8 @@
 # Need to traverse word search forward, backwards, up, down, and diagonally to determine 
 # where 'XMAS' is.
 
+import timeit
+
 def parse_input(filename):
     return [line.strip('\n') for line in open(filename, 'r')]
 
@@ -71,7 +73,7 @@ def find_mas_x(word_search, row, col):
             return 1
 
 def solve_part_two():
-    word_search = [list(x) for x in parse_input("day04_test_2.txt")] # Column-major
+    word_search = [list(x) for x in parse_input("day04.txt")] # Column-major
     count = 0
 
     # Traverse list horizontally
@@ -85,5 +87,7 @@ def solve_part_two():
     print(count)
     pass
 
-solve_part_one()
-solve_part_two()
+result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)
+print("Part I ran in %s seconds" % str(result))
+result = timeit.timeit('solve_part_two()', setup='from __main__ import solve_part_two', number=1)
+print("Part II ran in %s seconds" % str(result))
