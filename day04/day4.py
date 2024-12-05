@@ -7,10 +7,8 @@ def parse_input(filename):
 def test_coordinates(a,b,c,d, word_search):
     count = 0
     if(word_search[a[0]][a[1]] + word_search[b[0]][b[1]] + word_search[c[0]][c[1]] + word_search[d[0]][d[1]] == 'XMAS' and all([x >= 0 for x in [a[0], a[1], b[0], b[1], c[0], c[1], d[0], d[1]]])):
-        print(a[0], a[1], b[0], b[1], c[0], c[1], d[0], d[1])
         count += 1
     if(word_search[a[0]][a[1]] + word_search[b[0]][b[1]] + word_search[c[0]][c[1]] + word_search[d[0]][d[1]] == 'SAMX' and all([x >= 0 for x in [a[0], a[1], b[0], b[1], c[0], c[1], d[0], d[1]]])):
-        print(a[0], a[1], b[0], b[1], c[0], c[1], d[0], d[1])
         count += 1
     return count
 
@@ -53,4 +51,39 @@ def solve_part_one():
     print(count)
     pass
 
+def find_mas_x(word_search, row, col):
+    if row + 1 >= len(word_search) or row - 1 < 0:
+        return 0
+    
+    if col + 1 >= len(word_search) or col - 1 < 0:
+        return 0
+
+    if word_search[col - 1][row - 1] == 'M' and word_search[col + 1][row + 1] == 'S':
+        if word_search[col - 1][row + 1] == 'M' and word_search[col + 1][row - 1] == 'S':
+            return 1
+        if word_search[col - 1][row + 1] == 'S' and word_search[col + 1][row - 1] == 'M':
+            return 1
+
+    if word_search[col - 1][row - 1] == 'S' and word_search[col + 1][row + 1] == 'M':
+        if word_search[col - 1][row + 1] == 'M' and word_search[col + 1][row - 1] == 'S':
+            return 1
+        if word_search[col - 1][row + 1] == 'S' and word_search[col + 1][row - 1] == 'M':
+            return 1
+
+def solve_part_two():
+    word_search = [list(x) for x in parse_input("day04_test_2.txt")] # Column-major
+    count = 0
+
+    # Traverse list horizontally
+    for col in range(0, len(word_search[0])):
+        for row in range(0, len(word_search)):
+            try:
+                if(word_search[col][row] == 'A'):
+                    count += find_mas_x(word_search, row, col)
+            except:
+                pass
+    print(count)
+    pass
+
 solve_part_one()
+solve_part_two()
