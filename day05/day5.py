@@ -20,7 +20,7 @@ def test_order(order, rules):
 
 def solve_part_one():
     count = 0
-    input = parse_input("day05_test.txt")
+    input = parse_input("day05.txt")
 
     rules = input[:input.index('')]
     orders = [[int(y) for y in x.split(",")] for x in input[input.index('') + 1:]]
