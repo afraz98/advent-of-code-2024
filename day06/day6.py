@@ -36,7 +36,7 @@ def peek(x,y,input,direction):
 def solve_part_one():
     tiles = 0
     start_x, start_y = 0, 0
-    input = [[x for x in y] for y in parse_input("day06_test.txt")]
+    input = [[x for x in y] for y in parse_input("day06.txt")]
     direction = 0
 
     # Find starting position
@@ -49,16 +49,13 @@ def solve_part_one():
     y = start_y
 
     while 0 <= x < len(input[0]) - 1 and 0 <= y < len(input) - 1:
-        print(x,y)
         newx, newy = find_new_coordinates(x, y, direction)
-        print("New coordinates: %d, %d" % (newx, newy))
         if not peek(newx, newy, input, direction):
             direction = (direction + 1) % 4
             newx, newy = find_new_coordinates(x, y, direction)
         x = newx
         y = newy
         input[y][x] = 'X'
-        print_grid(input)
 
     for y in range(0, len(input)):
         for x in range(0, len(input[0])):
