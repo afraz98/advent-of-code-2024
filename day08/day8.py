@@ -12,7 +12,7 @@ def get_index(input, row, col):
 
 def solve_part_one():
     antinodes = set()
-    input = parse_input("day08_test.txt")
+    input = parse_input("day08.txt")
 
     for row in range(len(input)):
         for col in range(len(input[0])):
@@ -20,17 +20,25 @@ def solve_part_one():
                 for i in range(1, len(input)):
                     for j in range(1, len(input)):
                         if get_index(input, row + i, col + j) == input[row][col]:
-                            if get_index(input, row + i + j, col + i + j) != "":
-                                antinodes.add((row + i + j, col + i + j))
+                            k = 0
+                            while get_index(input, row + (k*i), col + (k*j)) != "":
+                                antinodes.add((row + (k*i), col + (k*j)))
+                                k += 1
                         if get_index(input, row - i, col - j) == input[row][col]:
-                            if get_index(input, row - i - j, col - i - j) != "":
-                                antinodes.add((row - i - j, col - i - j))
+                            k = 0
+                            while get_index(input, row - (k*i), col - (k*j)) != "":
+                                antinodes.add((row - (k*i), col - (k*j)))
+                                k += 1
                         if get_index(input, row + i, col - j) == input[row][col]:
-                            if get_index(input, row + i - j, col + i + j) != "":
-                                antinodes.add((row + i - j, col + i + j))
+                            k = 0
+                            while get_index(input, row + (k*i), col - (k*j)) != "":
+                                antinodes.add((row + (k*i), col - (k*j)))
+                                k += 1
                         if get_index(input, row - i, col + j) == input[row][col]:
-                            if get_index(input, row - i + j, col - i - j) != "":
-                                antinodes.add((row - i + j, col - i - j))
+                            k = 0
+                            while get_index(input, row - (k*i), col + (k*j)) != "":
+                                antinodes.add((row - (k*i), col + (k*j)))
+                                k += 1
     print(len(antinodes))
 
 def solve_part_two():
