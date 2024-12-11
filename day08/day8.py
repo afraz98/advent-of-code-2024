@@ -11,6 +11,9 @@ def get_index(input, row, col):
     return input[row][col]
 
 def solve_part_one():
+    pass
+
+def solve_part_two():
     antinodes = set()
     input = parse_input("day08.txt")
 
@@ -40,9 +43,6 @@ def solve_part_one():
                                 antinodes.add((row - (k*i), col + (k*j)))
                                 k += 1
     print(len(antinodes))
-
-def solve_part_two():
-    pass
 
 result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)
 print("Part I ran in %s seconds" % str(result))

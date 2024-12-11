@@ -95,7 +95,7 @@ Watching over your shoulder as you work, one of The Historians asks if you took 
 
 Whoops!
 
-After updating your model, it turns out that an antinode occurs at any grid position exactly in line with at least two antennas of the same frequency, regardless of distance. This means that some of the new antinodes will occur at the position of each antenna (unless that antenna is the only one of its frequency).
+ After updating your model, it turns out that an antinode occurs at any grid position exactly in line with at least two antennas of the same frequency, regardless of distance. This means that some of the new antinodes will occur at the position of each antenna (unless that antenna is the only one of its frequency).
 
 So, these three T-frequency antennas now create many antinodes:
 
