@@ -1,4 +1,5 @@
 import timeit
+from functools import lru_cache
 
 def parse_input(filename):
     return [[x.strip("\r\n") for x in line.split(" ")] for line in open(filename, 'r')][0]
@@ -20,11 +21,19 @@ def solve_part_one():
     print(stones)
     for _ in range(25):
         stones = blink(stones)
-        # print(stones)
     print(len(stones))
     pass
 
+# Iterative approach is too slow for 75 "blinks" -- 
+# See if there are patterns that can be evaluated without traversing through new stones?
+@lru_cache
 def solve_part_two():
+    stones = parse_input("day11.txt")
+    print(stones)
+    for x in range(50):
+        stones = blink(stones)
+        print(x)
+    print(len(stones))
     pass
 
 result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)
