@@ -16,7 +16,7 @@ def expand_input(input):
                 expanded.append(".")
     return expanded
 
-# FIXME: Don't think I'm accounting for multi-character IDs...
+# Move each block individually
 def solve_part_one():
     disk = expand_input(parse_input("day9.txt"))        
     j = len(disk) - 1
@@ -31,8 +31,12 @@ def solve_part_one():
             j -= 1
     print(sum([i * int(disk[i]) if disk[i] != '.' else 0 for i in range(len(disk))])) # Calculate checksum
 
+# Move files (blocks of same ID) together
 def solve_part_two():
+    disk = expand_input(parse_input("day9.txt"))
     pass
 
 result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)
 print("Part I ran in %s seconds" % str(result))
+result = timeit.timeit('solve_part_two()', setup='from __main__ import solve_part_two', number=1)
+print("Part II ran in %s seconds" % str(result))
