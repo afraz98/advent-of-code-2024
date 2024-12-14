@@ -9,6 +9,7 @@ def print_grid(grid):
 def parse_input(filename):
     return [[x for x in y.strip()] for y in open(filename, 'r')]
 
+# Recursive breadth-first search for peaks
 def find_trails(set, row, col, map, visited, last_value):
     if row < 0 or row > len(map) - 1: # Row out of bounds
         return set
