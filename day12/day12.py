@@ -46,8 +46,49 @@ def solve_part_one():
                 sum += (len(shape) * perimeter(shape, field[row][col], field))
     print(sum)
 
+"""
+Cross all vertical/horizontal lines against all points in the shape, count number of lines 
+that intersect with points? (y = n) (x = n)
+"""
+def find_sides(shape, crop, field):
+    sides = 0
+    for i in range(0, len(field)):
+        if((0,i) in shape):
+            sides += 1
+            shape = shape - {(0,i)}
+            break
+
+    for i in range(0, len(field)):
+        if((i,0) in shape):
+            sides += 1
+            shape = shape - {(i,0)}
+            break
+
+    for i in reversed(list(range(0, len(field)))):
+        if((0,i) in shape):
+            sides += 1
+            shape = shape - {(0,i)}
+            break
+
+    for i in reversed(list(range(0, len(field)))):
+        if((0,i) in shape):
+            sides += 1
+            shape = shape - {(i,0)}
+            break
+
+    return sides
+
 def solve_part_two():
-    pass
+    field = parse_input("day12_test.txt")
+    sum = 0
+
+    visited = [[False for _ in row] for row in field]
+    for row in range(0, len(field)):
+        for col in range(0, len(field[0])):
+            shape = adj(col, row, field[row][col], set(), field, visited)
+            if len(shape) > 0:
+                sum += (len(shape) * find_sides(shape, field[row][col], field))
+    print(sum)
 
 result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)
 print("Part I ran in %s seconds" % str(result))    
