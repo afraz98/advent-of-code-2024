@@ -177,7 +177,7 @@ def solve_part_two():
         for robot in robots:
             grid[robot[1]][robot[0]] += 1
         
-        if find_line(grid, 10): # If two robots are in a line, it's likely the solution...
+        if find_line(grid, 10): # If ten robots are in a line, it's likely the solution...
             print(iteration + 1)
             break
     print_grid(grid)
