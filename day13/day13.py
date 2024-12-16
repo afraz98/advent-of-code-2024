@@ -13,7 +13,6 @@ def parse_input(filename):
 def cramer(a_x, b_x, a_y, b_y, p_x, p_y):
     return ((p_x * b_y) - (p_y * b_x)) / (a_x * b_y - (a_y * b_x)), ((a_x * p_y) - (a_y * p_x)) / (a_x * b_y - (a_y * b_x))
 
-
 def solve_part_one():
     tokens = 0
     entries = parse_input("day13.txt") 
