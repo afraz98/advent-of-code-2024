@@ -1,7 +1,4 @@
-import re, timeit, os
-
-import matplotlib.pyplot as plt
-import numpy as np
+import re, timeit
 
 def print_grid(grid):
     for row in range(len(grid)):
@@ -65,6 +62,7 @@ def solve_test_input():
 
 def calculate_safety_score(grid, height, width):
     safety_score = 1
+    
     # Calculate safety score for each quadrant
     quadrant_score = 0
     for row in range(0, height // 2):
