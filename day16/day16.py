@@ -76,7 +76,7 @@ def trace_path(grid, cells, end_x, end_y):
 
 def get_rotation_cost(current_dir, new_dir):
     diff = abs(current_dir - new_dir) % 4
-    return 1000 * (1 if diff == 1 else 2 if diff == 2 else 0)
+    return 1000 * (1 if diff > 0 else 0)
 
 def traverse_maze(start_x, start_y, end_x, end_y, grid, height, width):
     """
@@ -143,7 +143,7 @@ def traverse_maze(start_x, start_y, end_x, end_y, grid, height, width):
     return score
 
 def solve_part_one():
-    grid = parse_input("day16_test.txt")
+    grid = parse_input("day16.txt")
 
     width = len(grid[0])
     height = len(grid)
