@@ -44,12 +44,10 @@ def parse_instructions(grid, instruction, robot_x, robot_y):
     return robot_x + dx, robot_y + dy
 
 def solve_part_one():
-    input = parse_input("day15_test2.txt")
+    input = parse_input("day15.txt")
     grid, instructions = ''.join(input).split("\n\n")
     grid = [[col for col in row.strip('\n')] for row in grid.split('\n')]
-
     instructions = [str(instruction) for instruction in instructions.replace('\n', "")]
-    print(instructions)
 
     robot_x, robot_y = -1, -1
     for row in range(len(grid)):
@@ -58,9 +56,15 @@ def solve_part_one():
                 robot_x, robot_y = col, row
     
     for instruction in instructions:
-        print("Move %s" % instruction)
         robot_x, robot_y = parse_instructions(grid, instruction, robot_x, robot_y)
-        print_grid(grid)
+
+    # Calculate coordinates
+    sum = 0
+    for row in range(len(grid)):
+        for col in range(len(grid[0])):
+            if grid[row][col] == 'O':
+                sum += (100 * row + col)
+    print(sum)
     pass
 
 def solve_part_two():
