@@ -16,8 +16,7 @@ def expand_input(input):
                 expanded.append(".")
     return expanded
 
-# Move each block individually
-def solve_part_one():
+def solve_part_one(): # Move each block individually
     disk = expand_input(parse_input("day9.txt"))        
     j = len(disk) - 1
     for i in range(len(disk)):
@@ -47,40 +46,34 @@ def print_disk(disk):
         print(''.join(entry), end='')
     print()
 
-# Move files (blocks of same ID) together
-def solve_part_two():
-    disk = expand_input_part_two(parse_input("day9_test.txt"))
-    print_disk(disk)
+def defragment_disk(disk):
     j = len(disk) - 1
-    
-    while j > 0 and disk[j][0] != 0:
-        swap = False
-        for i in range(len(disk)):
-            print(disk[j], disk[i])
-            if j <= i:
-                break
-            if len(disk[j]) > len(disk[i]):
+    while j > 0:
+        for i in range(j):
+            if len(disk[j]) > len(disk[i]): # Empty space too narrow
                 continue
-            while not swap and j > i and disk[i][0] == '.':
-                print("swap")
-                if disk[j][0] !=  ".":
-                    if len(disk[j]) == len(disk[i]): # Swap entire block
+            while j > i and '.' in disk[i]: # Empty space available
+                if disk[j] != [] and disk[j][0] !=  ".":
+                    if len(disk[j]) == len(disk[i]) and disk[i].count('.') >= len(disk[j]): # Swap entire block
                         disk[j], disk[i] = disk[i], disk[j]
-                        print_disk(disk)
-                        swap = True
-                    if len(disk[j]) < len(disk[i]): # Split into two regions
+                    if len(disk[j]) < len(disk[i]) and disk[i].count('.') >= len(disk[j]): # Swap blocks element-wise
                         for idx in range(len(disk[j])):
-                            disk[j][idx], disk[i][idx] = disk[i][idx], disk[j][idx]
-                        print_disk(disk)
-                        swap = True
-                j -= 1
-        print_disk(disk)
+                            disk[j][idx], disk[i][disk[i].index('.')] = disk[i][disk[i].index('.')], disk[j][idx]
+                i += 1
         j -= 1
-    print_disk(disk)
-    print(sum([i * len(disk[i]) if disk[i][0] != '.' else 0 for i in range(len(disk))])) # Calculate checksum
+    return False
+
+def solve_part_two(): # Move files (blocks of same ID) together
+    disk = expand_input_part_two(parse_input("day9_test.txt"))
+    defragment_disk(disk)
+
+    disk_str = ""
+    for i in range(len(disk)):
+        disk_str += ''.join([x for x in disk[i]])
+    print(sum([i * int(disk_str[i]) if disk_str[i] != '.' else 0 for i in range(len(disk_str))])) # Calculate checksum
     pass
 
-# result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)
-# print("Part I ran in %s seconds" % str(result))
+result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)
+print("Part I ran in %s seconds" % str(result))
 result = timeit.timeit('solve_part_two()', setup='from __main__ import solve_part_two', number=1)
 print("Part II ran in %s seconds" % str(result))
