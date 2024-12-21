@@ -50,7 +50,24 @@ def solve_part_one():
     print(','.join([str(x) for x in output]))
 
 def solve_part_two():
-    pass
+    output = []
+    registers = []
+    input = parse_input("day17.txt")
+
+    registers.append(int(input[0].replace(" ", "").split(":")[1]))
+    registers.append(int(input[1].replace(" ", "").split(":")[1]))
+    registers.append(int(input[2].replace(" ", "").split(":")[1]))
+    program = [int(opcode) for opcode in input[4].replace(" ", "").split(":")[1].split(",")]
+    
+    i = 100000000
+    while(output != program):
+        output = []
+        registers[0] = i
+        print("i = %d" % i)
+        instruction_pointer = 0
+        while instruction_pointer < len(program):
+            instruction_pointer, output, registers = run_instructions(instruction_pointer, registers, program[instruction_pointer], program[instruction_pointer+1], output)
+        i = i + 1
 
 result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)
 print("Part I ran in %s seconds" % str(result))
