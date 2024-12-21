@@ -137,6 +137,28 @@ def solve_part_one():
     pass
 
 def solve_part_two():
+    width, height = 71, 71
+    grid = [['.' for col in range(width)] for row in range(height)]
+
+    start_x, start_y = 0, 0
+    end_x, end_y = 70, 70
+
+    bytes = parse_input("day18.txt")
+    print(bytes)
+    for i in range(1024):
+        if len(bytes[i]) > 1:
+            x,y = bytes[i].split(",")
+            grid[int(y)][int(x)] = '#'
+
+    i = 1024
+    path_score = traverse_grid(start_x, start_y, end_x, end_y, grid, height, width)
+    while path_score > 0:
+        if len(bytes[i]) > 1:
+            x,y = bytes[i].split(",")
+            print(x,y)
+            grid[int(y)][int(x)] = '#'
+        i = i + 1
+        path_score = traverse_grid(start_x, start_y, end_x, end_y, grid, height, width)
     pass
 
 result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)
