@@ -25,11 +25,12 @@ def peek(x, y, input):
 
 def find_coordinates(start_x, start_y, grid):
     direction = 0
-    tiles = 0
+    path = set()
 
     x = start_x
     y = start_y
     while 0 <= x < len(grid[0]) - 1 and 0 <= y < len(grid) - 1:
+        path.add((y,x))
         new_x, new_y = find_new_coordinates(x, y, direction)
         if not peek(new_x, new_y, grid):
             direction = (direction + 1) % 4
@@ -37,23 +38,18 @@ def find_coordinates(start_x, start_y, grid):
         x = new_x
         y = new_y
         grid[y][x] = direction_print[direction]
-
-    for y in range(0, len(grid)):
-        for x in range(0, len(grid[0])):
-            if grid[y][x] in direction_print:
-                tiles += 1
-    return tiles
+    return path
 
 def find_coordinates_part_two(start_x, start_y, grid):
     direction = 0
-    steps_taken = 0
+    steps = 0
+    path = set()
 
     x = start_x
     y = start_y
-
     while 0 <= x < len(grid[0]) and 0 <= y < len(grid):
-        steps_taken += 1
-        if steps_taken > len(grid) * len(grid[0]):
+        steps += 1
+        if steps > len(grid) * len(grid[0]):
             return -1
         new_x, new_y = find_new_coordinates(x, y, direction)
         if not peek(new_x, new_y, grid):
@@ -72,7 +68,7 @@ def solve_part_one():
         for x in range(len(grid[0])):
             if grid[y][x] == '^':
                 start_x, start_y = x, y
-    print(find_coordinates(start_x, start_y, grid))
+    print(len(find_coordinates(start_x, start_y, grid)))
 
 def solve_part_two():
     invalid = 0
@@ -85,14 +81,14 @@ def solve_part_two():
             if grid[y][x] == '^':
                 start_x, start_y = x, y
 
-    for y in range(len(grid)):
-        for x in range(len(grid[0])):
-            if x == start_x and y == start_y:
-                continue
-            temp = copy.deepcopy(grid)
-            temp[y][x] = '#'
-            if find_coordinates_part_two(start_x, start_y, temp) == -1:
-                invalid += 1
+    path = find_coordinates(start_x, start_y, grid)
+    path.remove((start_y, start_x))
+
+    for y,x in path:
+        temp = copy.deepcopy(grid)
+        temp[y][x] = '#'
+        if find_coordinates_part_two(start_x, start_y, temp) == -1:
+            invalid += 1
     print(invalid)
 
 result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)
