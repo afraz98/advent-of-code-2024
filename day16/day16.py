@@ -69,23 +69,70 @@ def trace_path(cells, end_x, end_y):
     path.insert(0, cells[row][col])
     return int(path_score)
 
-def backtrack_path(cells, x, y, width, height):
-    print(x,y)
-    if x < 0 or x >= height or y < 0 or y >= width:
-        return set()
+def trace_path_part_two(grid, cells, end_x, end_y):
+    """
+    Trace A* algorithm path, returning path score
 
-    current = cells[x][y]
-    last_direction = current.direction
-    path = set((current.x, current.y))
+    Args:
+        cells (list): Cell data matrix
+        end_x (int): Ending x coordinate
+        end_y (int): Ending y coordinate
 
-    while current.parent_x != -1 and current.parent_y != -1: # Parent exists?
-        current = cells[current.parent_x][current.parent_y]
-        path.add((current.x, current.y))
+    Returns:
+        (int): Path score
+    """    
+    path_score = 0
+    row, col = end_x, end_y
+    path = []
+
+    while not (cells[row][col].parent_x == row and cells[row][col].parent_y == col):
+        path.insert(0, (row, col))
+        grid[row][col] = '+'
+        parent_row = cells[row][col].parent_x
+        parent_col = cells[row][col].parent_y 
+        path_score = path_score + 1.0 + get_rotation_cost(cells[row][col].direction, cells[parent_row][parent_col].direction) 
+        row, col = parent_row, parent_col
+
+    path.insert(0, (row,col))
+    grid[row][col] = '+'
+    return path
+
+# Check all nodes where the score is equal to current_score - 1 or current_score - 1001?
+def backtrack_path(grid, cells, x, y, width, height):
+    """
+    Trace A* algorithm path, returning path
+
+    Args:
+        cells (list): Cell data matrix
+        end_x (int): Ending x coordinate
+        end_y (int): Ending y coordinate
+
+    Returns:
+        (int): Path score
+    """    
+    
+    open = [ (cells[x][y], {cells[x][y]}) ]
+    visited = [[False for i in range(width)] for i in range(height)]
+    valid = []
+    paths = []
+
+    while open:
+        cell, path = min(open, key=lambda x : x.f)
+        open.remove(cell)
+        visited[cell.x][cell.y] = True
+        valid.append((cell.x, cell.y))
+
         for dx, dy in [(-1, 0), (1, 0), (0, 1), (0, -1)]:
-            if last_direction != cells[current.x + dx][current.y + dy].direction:
-                path = path | backtrack_path(cells, current.x + dx, current.y + dy, width, height) 
-        last_direction = current.direction
-    return len(path)
+            new_x = cell.x + dx
+            new_y = cell.y + dy
+
+            if 0 <= new_x < height and 0 <= new_y < width and grid[new_x][new_y] != '#': # Cell within grid bounds
+                if visited[new_x][new_y]: # Cell already visited?
+                    continue
+                if cells[new_x][new_y].g == cells[cell.x][cell.y].g - 1 or cells[new_x][new_y].g == cells[cell.x][cell.y].g - 1001:
+                    open.append(cells[new_x][new_y], path | {cells[new_x][new_y]})
+    return len(valid)
+
 
 def get_rotation_cost(current_dir, new_dir):
     diff = abs(current_dir - new_dir) % 4
@@ -111,6 +158,8 @@ def traverse_maze_part_one(start_x, start_y, end_x, end_y, grid, height, width):
     cells = [[None for i in range(width)] for i in range(height)]
     score = 0
 
+    closed = [[False for i in range(width)] for i in range(height)]
+
     for i in range(height):
         for j in range(width):
             cells[i][j] = Cell(i, j, grid[i][j])
@@ -124,7 +173,6 @@ def traverse_maze_part_one(start_x, start_y, end_x, end_y, grid, height, width):
     open.append(start_cell)
 
     while open:
-        # cell = open.pop(0) # Try dequeuing minimum f value?...
         cell = min(open, key=lambda x : x.f)
         open.remove(cell)
         closed[cell.x][cell.y] = True
@@ -137,8 +185,7 @@ def traverse_maze_part_one(start_x, start_y, end_x, end_y, grid, height, width):
             new_y = cell.y + dy
 
             if 0 <= new_x < height and 0 <= new_y < width: # Cell within grid bounds
-                # Successor not in closed list and path is 'unblocked'
-                if closed[new_x][new_y]:
+                if closed[new_x][new_y]: # Successor not in closed list and path is 'unblocked'
                     continue
 
                 if grid[cell.x][cell.y] != "#":
@@ -153,7 +200,7 @@ def traverse_maze_part_one(start_x, start_y, end_x, end_y, grid, height, width):
                         cells[new_x][new_y].parent_y = cell.y
                         cells[new_x][new_y].direction = new_direction
                         open.append(cells[new_x][new_y])
-    return score
+    return -1
 
 def traverse_maze_part_two(start_x, start_y, end_x, end_y, grid, height, width):
     """
@@ -187,24 +234,26 @@ def traverse_maze_part_two(start_x, start_y, end_x, end_y, grid, height, width):
     start_cell.parent_y = start_y
     open.append(start_cell)
 
+    paths = []
     while open:
         cell = min(open, key=lambda x : x.f)
         open.remove(cell)
-        closed[cell.x][cell.y] = True
+        closed[cell.x][cell.y] = True # Node has been visited
 
         if cell.x == end_x and cell.y == end_y: # End found
-            return backtrack_path(cells, end_x, end_y, width, height)
-
+            paths.append(trace_path_part_two(grid, cells, end_x, end_y))
+            continue
+        
         for dx, dy, new_direction in [(-1, 0, 0), (1, 0, 1), (0, 1, 2), (0, -1, 3)]: # N S E W
             new_x = cell.x + dx
             new_y = cell.y + dy
 
             if 0 <= new_x < height and 0 <= new_y < width: # Cell within grid bounds
-                # Successor not in closed list and path is 'unblocked'
-                if closed[new_x][new_y]:
+                if closed[new_x][new_y]: # Successor not in closed list and path is 'unblocked'
                     continue
 
                 if grid[cell.x][cell.y] != "#":
+                    grid[cell.x][cell.y] = "!"
                     g_new = cells[cell.x][cell.y].g + 1.0 + get_rotation_cost(cell.direction, new_direction)
                     h_new = manhattan_distance(new_x, end_x, new_y, end_y) 
                     f_new = g_new + h_new
@@ -216,7 +265,7 @@ def traverse_maze_part_two(start_x, start_y, end_x, end_y, grid, height, width):
                         cells[new_x][new_y].parent_y = cell.y
                         cells[new_x][new_y].direction = new_direction
                         open.append(cells[new_x][new_y])
-    return -1
+    return paths
 
 def solve_part_one():
     grid = parse_input("day16.txt")
@@ -242,6 +291,7 @@ def solve_part_two():
 
     width = len(grid[0])
     height = len(grid)
+    positions = set()
 
     start_x, start_y = 0, 0
     for i in range(height):
@@ -254,8 +304,12 @@ def solve_part_two():
         for j in range(len(grid[0])):
             if grid[i][j] == 'E':
                 end_x, end_y = i, j
-    print(traverse_maze_part_two(start_x, start_y, end_x, end_y, grid, height, width))
+    paths = traverse_maze_part_two(start_x, start_y, end_x, end_y, grid, height, width)
 
+    for path in paths:
+        positions = positions | set(path)
+    print(len(positions))
+    
 result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)
 print("Part I ran in %s seconds" % str(result))
 result = timeit.timeit('solve_part_two()', setup='from __main__ import solve_part_two', number=1)

@@ -79,7 +79,6 @@ def traverse_grid(start_x, start_y, end_x, end_y, grid, height, width):
     open.append(start_cell)
 
     while open:
-        # cell = open.pop(0) # Try dequeuing minimum f value?...
         cell = min(open, key=lambda x : x.f)
         open.remove(cell)
         closed[cell.x][cell.y] = True
