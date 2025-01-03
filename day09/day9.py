@@ -4,9 +4,9 @@ def parse_input(filename):
     return open(filename).read().strip("\r\n")
 
 def calculate_checksum(disk):
-    return sum([i * int(disk[i]) if disk[i] != '.' else 0 for i in range(len(disk))])
+    return sum([i * int(v) if disk[i] != '.' else 0 for i,v in enumerate(disk)])
 
-def expand_input(input):
+def expand_input(input): # Why is there an empty list between some of the elements?
     id = 0
     expanded = []
     for i in range(0, len(input)):
@@ -19,7 +19,7 @@ def expand_input(input):
         else:
             for _ in range(int(input[i])):
                 expanded.append(".")
-    return expanded
+    return list(filter(lambda x: x != [], expanded))
 
 def solve_part_one(): # Move each block individually
     disk = expand_input(parse_input("day9.txt"))        
@@ -40,46 +40,69 @@ def expand_input_part_two(input):
     id = 0
     for i in range(len(input)):
         if i % 2 == 0:
-            if(int(input[i]) != 0):
-                expanded.append([str(id) for _ in range(int(input[i]))])
+            if int(input[i]) != 0:
+                for _ in range(int(input[i])):
+                    expanded.append(id)
             id = id + 1
-        else:
-            if (int(input[i] != 0)):
-                expanded.append(["." for _ in range(int(input[i]))])
-    return expanded
+        else: # Empty space
+            if int(input[i]) != 0:
+                for _ in range(int(input[i])):
+                    expanded.append(-1)
+    return id, expanded
 
 def print_disk(disk):
     for entry in disk:
-        print(''.join(entry), end='')
+        print(','.join(str(entry)), end='')
     print()
 
-def move_files(disk, i, j):
-    if len(disk[j]) == len(disk[i]) and disk[i].count('.') >= len(disk[j]): # Swap entire block
-        disk[j], disk[i] = disk[i], disk[j]
-        return True
-    if len(disk[j]) < len(disk[i]) and disk[i].count('.') >= len(disk[j]): # Swap blocks element-wise
-        for idx in range(len(disk[j])):
-            disk[j][idx], disk[i][disk[i].index('.')] = disk[i][disk[i].index('.')], disk[j][idx]
-        return True
-    return False
+def defragment_disk(max_id, disk):
+    end_id = len(disk) - 1
+    id = max_id - 1
+    while id >= 0:
+        # Look for ID region
+        while disk[end_id] != id: # Find end index (iterating from end of list)
+            end_id -= 1
 
-def defragment_disk(disk):
-    j = len(disk) - 1
-    while j > 0:
-        i = 0
-        while j > i and not move_files(disk, i, j):
-            i += 1
-        j -= 1
+        start_id = end_id - 1
+        while disk[start_id] == id: # Find starting index
+            start_id -= 1
+        id_size = end_id - start_id
+
+        # Look for empty region
+        start_empty = 0
+        while start_empty < start_id:
+            while disk[start_empty] != -1: # Find starting index of empty region
+                start_empty = start_empty + 1
+
+            end_empty = start_empty
+            while disk[end_empty] == -1: # Find end index of empty region
+                end_empty += 1
+            empty_size = end_empty - start_empty
+
+            if empty_size >= id_size: # Empty region of adequate size found
+                break
+            start_empty += empty_size # Otherwise continue iterating 
+
+        # Swap ID, empty region
+        if empty_size >= id_size and start_id > start_empty:
+            for i in range(0, id_size):
+                disk[start_empty + i] = id
+
+            for j in range(0, id_size):
+                disk[end_id - j] = -1
+        id = id - 1
     return disk
 
 def solve_part_two(): # Move files (blocks of same ID) together
-    disk = expand_input_part_two(parse_input("day9.txt"))
-    disk = defragment_disk(disk)
+    id, disk = expand_input_part_two(parse_input("day9.txt")) # Example should be 2858
+    disk = defragment_disk(id, disk)
 
     disk_str = ""
     for i in range(len(disk)):
-        disk_str += ''.join([x for x in disk[i]])
-    print(calculate_checksum(disk_str)) # Calculate checksum
+        if disk[i] == -1:
+            disk[i] = 0
+
+    print(sum([i * v for i, v in enumerate(disk)]))
     pass
 
 result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)

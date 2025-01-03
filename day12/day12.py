@@ -20,7 +20,19 @@ def adj(x, y, crop, shape, field, visited):
     shape.add((x,y))
     return adj(x+1, y, crop, shape, field, visited) | adj(x, y+1, crop, shape, field, visited) | adj(x-1, y, crop, shape, field, visited) | adj(x, y-1, crop, shape, field, visited)
 
+
 def perimeter(shape, crop, field):
+    """
+    Calculate the perimeter of a shape represented as a series of (x,y) coordinates.
+    Iterate outward from each cell until the edge of the grid or a different crop is found
+
+    Args:
+        shape (list): Collection of (x,y) points within shape
+        crop (str): Crop value of each point in the shape
+        field (list(list(str))): 2D grid representing crop fields
+    Returns:
+        (int) Shape perimeter
+    """
     perimeter = 0
     for cell in shape:
         col, row = cell[0], cell[1]
@@ -46,48 +58,39 @@ def solve_part_one():
                 sum += (len(shape) * perimeter(shape, field[row][col], field))
     print(sum)
 
-"""
-Cross all vertical/horizontal lines against all points in the shape, count number of lines 
-that intersect with points? (y = n) (x = n)
-"""
-def find_sides(shape, crop, field):
+def find_sides(shape):
+    """
+    Count the number of vertices in the shape by checking all coordinates in an
+    'L' shape around a given (x,y) coordinate
+
+    Args:
+        shape (list): Collection of (x,y) points within shape
+        crop (str): Crop value of each point in the shape
+        field (list(list(str))): 2D grid representing crop fields
+    Returns:
+        (int) Number of sides on the shape
+
+    Inspired by a solution posted by u/xavd
+    """
     sides = 0
-    for i in range(0, len(field)):
-        if((0,i) in shape):
-            sides += 1
-            shape = shape - {(0,i)}
-            break
-
-    for i in range(0, len(field)):
-        if((i,0) in shape):
-            sides += 1
-            shape = shape - {(i,0)}
-            break
-
-    for i in reversed(list(range(0, len(field)))):
-        if((0,i) in shape):
-            sides += 1
-            shape = shape - {(0,i)}
-            break
-
-    for i in reversed(list(range(0, len(field)))):
-        if((0,i) in shape):
-            sides += 1
-            shape = shape - {(i,0)}
-            break
-
+    for x, y in shape:
+        for dx, dy in [(-1, -1), (-1, 1), (1, -1), (1,1)]:
+            if (x + dx, y) not in shape and (x, y + dy) not in shape:
+                sides += 1
+            if (x + dx, y) in shape and (x, y + dy) in shape and (x + dx, y + dy) not in shape:
+                sides += 1
     return sides
 
 def solve_part_two():
-    field = parse_input("day12_test.txt")
+    field = parse_input("day12.txt")
     sum = 0
 
     visited = [[False for _ in row] for row in field]
     for row in range(0, len(field)):
         for col in range(0, len(field[0])):
             shape = adj(col, row, field[row][col], set(), field, visited)
-            if len(shape) > 0:
-                sum += (len(shape) * find_sides(shape, field[row][col], field))
+            sides = find_sides(shape)
+            sum += (len(shape) * sides)
     print(sum)
 
 result = timeit.timeit('solve_part_one()', setup='from __main__ import solve_part_one', number=1)
